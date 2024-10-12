@@ -1,0 +1,10 @@
+# MS
+.vs
+obj
+bin
+
+# Rider
+/.idea
+
+# Mac
+.DS_Store
