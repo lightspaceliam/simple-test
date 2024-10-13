@@ -34,7 +34,7 @@ var host = Host.CreateDefaultBuilder(args)
 		services.AddDbContext<SimpleTestDbContext>(options =>
 		{
 			options.UseSqlServer(
-				hostContext.Configuration["ConnectionStrings:Connection"],
+				hostContext.Configuration["ConnectionStrings:DockerConnection"],
 				optionsBuilder =>
 				{
 					optionsBuilder.ExecutionStrategy(
@@ -46,29 +46,6 @@ var host = Host.CreateDefaultBuilder(args)
 		services.AddTransient<FacultyEntityService>();
 	})
 	.Build();
-
-//  Apply Auto Migrations.
-var context = host.Services.GetRequiredService<SimpleTestDbContext>();
-context.Database.Migrate();
-
-//  Seed.
-
-var studentService = host.Services.GetRequiredService<StudentEntityService>();
-var facultyService = host.Services.GetRequiredService<FacultyEntityService>();
-
-var hasStudents = (studentService.FindByPredicate() ?? new())
-	.Any();
-
-//  Seed database but only if there is no data.
-if (!hasStudents)
-{
-	Console.WriteLine($"Seed data - Students, Faculties and many to many relationship.");
-	context.Students.AddRange(StudentFacultySeedData.Students);
-	context.Faculties.AddRange(StudentFacultySeedData.Faculties);
-	context.StudentFaculty.AddRange(StudentFacultySeedData.StudentFaculties);
-	await context.SaveChangesAsync();	
-}
-
 
 /*
  * Given the variable declaration in C#: 
@@ -102,12 +79,14 @@ Func<int, bool, string> myFunc = (number, flag) =>
 			.Where(p => p % 2 == 0)
 			.OrderBy(p => p)
 			.ToList();
+		
 		return string.Join(", ", even);
 	}
 	var odd = numbers
 		.Where(p => p % 2 != 0)
 		.OrderBy(p => p)
 		.ToList();
+	
 	return string.Join(", ", odd);
 };
 
@@ -118,6 +97,27 @@ Console.WriteLine($"Even: {myFunc(20, true)}");
  * Given the following database tables, write an SQL query to return the names of students in the faculty named "Medicine"
  */
 Console.WriteLine("\n\nGiven the following database tables, write an SQL query to return the names of students in the faculty named “Medicine”:\n");
+
+//  Seed.
+var studentService = host.Services.GetRequiredService<StudentEntityService>();
+var facultyService = host.Services.GetRequiredService<FacultyEntityService>();
+
+var hasStudents = (studentService.FindByPredicate() ?? new())
+	.Any();
+
+//  Apply Auto Migrations.
+var context = host.Services.GetRequiredService<SimpleTestDbContext>();
+context.Database.Migrate();
+
+//  Seed database but only if there is no data.
+if (!hasStudents)
+{
+	Console.WriteLine($"Seed data - Students, Faculties and many to many relationship.");
+	context.Students.AddRange(StudentFacultySeedData.Students);
+	context.Faculties.AddRange(StudentFacultySeedData.Faculties);
+	context.StudentFaculty.AddRange(StudentFacultySeedData.StudentFaculties);
+	await context.SaveChangesAsync();	
+}
 
 const string facultyName = "Medicine";
 

@@ -8,7 +8,7 @@ public class SimpleTestDbContextFactory : IDesignTimeDbContextFactory<SimpleTest
 	public SimpleTestDbContext CreateDbContext(string[] args)
 	{
 		var optionsBuilder = new DbContextOptionsBuilder<SimpleTestDbContext>();
-		//  Windows.
+		//  Local Windows - not tested.
 		// optionsBuilder.UseSqlServer("Server=localhost;Database=SimpleTestDbContext;Integrated Security=True;MultipleActiveResultSets=True");
 
 		//  Docker - you will need to add, name and set your own: container and credentials.

@@ -17,7 +17,7 @@ Designed to demonstrate the basics of prescribed test for:
 
 ### Entities
 
-**Class library:** initial implementation of database entities. Includes entities:
+**Class library:** initial implementation of database entities. Includes entities and schema migrations.
 
 - Student
 - Faculty
@@ -31,11 +31,11 @@ Designed to demonstrate the basics of prescribed test for:
   - Required
   - String lengths
 
-Supports criteria - query students assigned to faculty: Medicine and demonstrates utilization of Func
+Supports criteria - query students assigned to faculty: **Medicine** and demonstrates utilization of Func
 
 ### EntitiesService
 
-**Class library:** initial implementation facilitating generic CRUD functionality.
+**Class library:** initial implementation facilitating generic CRUD functionality and overrides the concrete implementation to demonstrate querying for Students by Faculty name.
 
 Supports criteria - query students assigned to faculty: Medicine and demonstrates utilization of Func
 
@@ -59,7 +59,7 @@ Above an beyond - implementing the ability to:
 
 - Create a database - configured locally
 - Automatically run Entity Framework schema migrations
-- Seed data id none already exist
+- Seed data if none already exist
 - TSQL scripts
 
 All this to showcase real world use of querying data:
@@ -70,6 +70,56 @@ All this to showcase real world use of querying data:
 ```
 Students < 1 to many > StudentFaculty < many to 1 > Faculties
 ```
+
+##  How To Run
+
+Ensure you have:
+
+- [.NET Core 8 installed](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [Entity Framework 8](https://learn.microsoft.com/en-us/ef/core/get-started/overview/install)
+- Access to Docker or if on Windows access to your local SQL Sever as localhost
+
+**SimpleTest Project:**
+
+On line 37 the database is configured to use the connection string in `appsettings.json` 
+
+```C#
+// If you are using Docker, leave as is
+
+options.UseSqlServer(
+				hostContext.Configuration["ConnectionStrings:DockerConnection"],
+				...
+
+// If you are using Windows and can connect to your local SQL Server on localhost with Windows Authentication (I haven't used windows for a while)
+
+options.UseSqlServer(
+				hostContext.Configuration["ConnectionStrings:LocalWindowsConnection"],
+				...
+
+```
+**Docker SQL Server Install:**
+
+```bash
+
+# Only use `sudo` if on a Mac
+
+# Get the image
+sudo docker pull mcr.microsoft.com/mssql/server:2022-latest
+
+# Set password and configure port number
+sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Local@DevPa55word" \
+   -p 1433:1433 --name sql1 --hostname sql1 \
+   -d \
+   mcr.microsoft.com/mssql/server:2022-latest
+```
+
+## Local Connection
+
+- Server: tcp:localhost
+- U: sa
+- P: Local@DevPa55word
+
+Otherwise, update the connection string to what works for your local environment.
 
 ##  Additional Examples
 
